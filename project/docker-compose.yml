@@ -1,0 +1,9 @@
+services:
+
+  fr:
+    build:
+      context: ./../fr
+      dockerfile: ./../fr/fr.dockerfile
+    restart: always
+    ports:
+      - "8080:80"
