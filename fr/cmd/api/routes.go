@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func routes() http.Handler {
+func (app *Config) routes() http.Handler {
 	r := chi.NewRouter()
 
 	// who is allowed to connect?
@@ -22,6 +22,8 @@ func routes() http.Handler {
 	}))
 
 	r.Use(middleware.Heartbeat("/ping"))
+
+	r.Post("/", app.Fr)
 
 	return r
 }
