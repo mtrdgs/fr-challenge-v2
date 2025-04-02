@@ -79,7 +79,10 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	}
 	//app.writeJSON(w, http.StatusOK, responseAPI)
 
-	// format response from api, to be used on mongo
-	responseQuote := app.formatResponseAPI(responseAPI)
-	app.writeJSON(w, http.StatusOK, responseQuote)
+	// format response from api, to be used in mongo
+	quoteResult := app.formatResponseAPI(responseAPI)
+	//app.writeJSON(w, http.StatusOK, responseQuote)
+
+	// save result in mongo
+	// TODO
 }
