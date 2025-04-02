@@ -6,8 +6,37 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 )
+
+// RequestAPI
+type requestAPI struct {
+	Shipper struct {
+		RegisteredNumber string `json:"registered_number"`
+		Token            string `json:"token"`
+		PlatformCode     string `json:"platform_code"`
+	} `json:"shipper"`
+	Recipient struct {
+		Type    int    `json:"type"`
+		Country string `json:"country"`
+		Zipcode int    `json:"zipcode"`
+	} `json:"recipient"`
+	Dispatchers    []dispatcher `json:"dispatchers"`
+	SimulationType []int        `json:"simulation_type"`
+	Returns        struct {
+		Composition  bool `json:"composition"`
+		Volumes      bool `json:"volumes"`
+		AppliedRules bool `json:"applied_rules"`
+	} `json:"returns"`
+}
+
+// Dispatcher -
+type dispatcher struct {
+	RegisteredNumber string   `json:"registered_number"`
+	Zipcode          int      `json:"zipcode"`
+	Volumes          []volume `json:"volumes"`
+}
 
 func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.Marshal(data)
@@ -117,4 +146,36 @@ func (app *Config) checkRequest(req requestQuote) (args []string) {
 	}
 
 	return args
+}
+
+func (app *Config) buildRequestAPI(reqQuote requestQuote) (reqAPI requestAPI) {
+	// shipper
+	reqAPI.Shipper.RegisteredNumber = "25438296000158"        // hardcoded for now
+	reqAPI.Shipper.Token = "1d52a9b6b78cf07b08586152459a5c90" // hardcoded for now
+	reqAPI.Shipper.PlatformCode = "5AKVkHqCn"                 // hardcoded for now
+
+	// recipient
+	reqAPI.Recipient.Type = 0        // fixed
+	reqAPI.Recipient.Country = "BRA" // fixed
+	reqAPI.Recipient.Zipcode, _ = strconv.Atoi(reqQuote.Recipient.Address.Zipcode)
+
+	// dispatchers
+	var dispatcher dispatcher
+	dispatcher.RegisteredNumber = "25438296000158" // hardcoded for now
+	dispatcher.Zipcode = reqAPI.Recipient.Zipcode
+	for _, volume := range reqQuote.Volumes {
+		volume.UnitaryPrice = volume.Price / volume.Amount
+		dispatcher.Volumes = append(dispatcher.Volumes, volume)
+	}
+	reqAPI.Dispatchers = append(reqAPI.Dispatchers, dispatcher)
+
+	// simulation type
+	reqAPI.SimulationType = append(reqAPI.SimulationType, 0) // fixed
+
+	// returns
+	reqAPI.Returns.Composition = false
+	reqAPI.Returns.Volumes = false
+	reqAPI.Returns.AppliedRules = false
+
+	return reqAPI
 }
