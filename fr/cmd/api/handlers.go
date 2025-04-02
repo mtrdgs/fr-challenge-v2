@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 )
 
@@ -49,6 +50,11 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// check if its returning
-	app.writeJSON(w, http.StatusOK, requestQuote)
+	// verify how many invalid arguments request has
+	// example of invalid argument: missing zipcode
+	invalidArgs := app.checkRequest(requestQuote)
+	if len(invalidArgs) > 0 {
+		app.errorJSON(w, errors.New("invalid requests"), http.StatusBadRequest)
+		return
+	}
 }
