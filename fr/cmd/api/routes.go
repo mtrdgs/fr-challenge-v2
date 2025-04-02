@@ -24,6 +24,7 @@ func (app *Config) routes() http.Handler {
 	r.Use(middleware.Heartbeat("/ping"))
 
 	r.Post("/", app.Fr)
+	r.Post("/quote", app.Quote)
 
 	return r
 }
