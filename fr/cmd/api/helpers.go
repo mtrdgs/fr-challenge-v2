@@ -93,6 +93,19 @@ type offer struct {
 	Modal string `json:"modal"`
 }
 
+type QuoteEntry struct {
+	Carrier   []Carrier `json:"carrier"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// Carrier -
+type Carrier struct {
+	Name     string  `json:"name"`
+	Service  string  `json:"service"`
+	Deadline int     `json:"deadline"`
+	Price    float64 `json:"price"`
+}
+
 func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
@@ -271,4 +284,23 @@ func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err e
 	}
 
 	return resAPI, nil
+}
+
+func (app *Config) formatResponseAPI(entry responseAPI) (result QuoteEntry) {
+	// has dispatchers?
+	if len(entry.Dispatchers) == 0 {
+		return result
+	}
+
+	// format response from api
+	for _, value := range entry.Dispatchers[0].Offers {
+		result.Carrier = append(result.Carrier, Carrier{
+			Name:     value.Carrier.Name,
+			Service:  value.Modal,
+			Deadline: value.CarrierOriginalDeliveryTime.Days,
+			Price:    value.FinalPrice,
+		})
+	}
+
+	return result
 }
