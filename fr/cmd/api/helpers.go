@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -75,6 +76,44 @@ func (app *Config) checkRequest(req requestQuote) (args []string) {
 	// contains volume?
 	if len(req.Volumes) == 0 {
 		args = append(args, "Volumes is required")
+	}
+
+	// contains specific variables?
+	for key, value := range req.Volumes {
+		// category
+		if strings.EqualFold(value.Category, "") {
+			args = append(args, fmt.Sprintf("Category is required for Volume[%d]", key))
+		}
+
+		// amount
+		if value.Amount == 0 {
+			args = append(args, fmt.Sprintf("Amount is required for Volume[%d]", key))
+		}
+
+		// price
+		if value.Price == 0 {
+			args = append(args, fmt.Sprintf("Price is required for Volume[%d]", key))
+		}
+
+		// sku
+		if strings.EqualFold(value.Sku, "") {
+			args = append(args, fmt.Sprintf("SKU is required for Volume[%d]", key))
+		}
+
+		// height
+		if value.Height == 0 {
+			args = append(args, fmt.Sprintf("Height is required for Volume[%d]", key))
+		}
+
+		// width
+		if value.Width == 0 {
+			args = append(args, fmt.Sprintf("Width is required for Volume[%d]", key))
+		}
+
+		// length
+		if value.Length == 0 {
+			args = append(args, fmt.Sprintf("Length is required for Volume[%d]", key))
+		}
 	}
 
 	return args
