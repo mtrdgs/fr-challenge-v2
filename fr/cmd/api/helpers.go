@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
@@ -61,4 +62,20 @@ func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) er
 	payload.Message = err.Error()
 
 	return app.writeJSON(w, statusCode, payload)
+}
+
+func (app *Config) checkRequest(req requestQuote) (args []string) {
+	args = make([]string, 0)
+
+	// contains zipcode?
+	if strings.EqualFold(req.Recipient.Address.Zipcode, "") {
+		args = append(args, "Zipcode is required")
+	}
+
+	// contains volume?
+	if len(req.Volumes) == 0 {
+		args = append(args, "Volumes is required")
+	}
+
+	return args
 }
