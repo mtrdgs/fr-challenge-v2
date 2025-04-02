@@ -301,6 +301,7 @@ func (app *Config) formatResponseAPI(entry responseAPI) (result QuoteEntry) {
 			Price:    value.FinalPrice,
 		})
 	}
+	result.CreatedAt = time.Now()
 
 	return result
 }
