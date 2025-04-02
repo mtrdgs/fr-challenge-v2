@@ -1,13 +1,13 @@
 package main
 
 import (
-	"errors"
 	"net/http"
 )
 
 type jsonResponse struct {
 	Error   bool   `json:"error"`
 	Message string `json:"message"`
+	Data    any    `json:"data,omitempty"`
 }
 
 type requestQuote struct {
@@ -42,6 +42,7 @@ func (app *Config) Fr(w http.ResponseWriter, r *http.Request) {
 
 func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	requestQuote := requestQuote{}
+	payload := jsonResponse{}
 
 	// decode request
 	err := app.readJSON(w, r, &requestQuote)
@@ -54,7 +55,11 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	// example of invalid argument: missing zipcode
 	invalidArgs := app.checkRequest(requestQuote)
 	if len(invalidArgs) > 0 {
-		app.errorJSON(w, errors.New("invalid requests"), http.StatusBadRequest)
+		payload.Error = true
+		payload.Message = "Missing arguments!"
+		payload.Data = invalidArgs
+
+		app.writeJSON(w, http.StatusBadRequest, payload)
 		return
 	}
 }
