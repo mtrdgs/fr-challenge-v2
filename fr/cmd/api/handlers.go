@@ -62,4 +62,11 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 		app.writeJSON(w, http.StatusBadRequest, payload)
 		return
 	}
+
+	// build request (needed for external api)
+	requestAPI := app.buildRequestAPI(requestQuote)
+
+	// verify valid
+	app.writeJSON(w, http.StatusOK, requestAPI)
+
 }
