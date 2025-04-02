@@ -65,8 +65,18 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 
 	// build request (needed for external api)
 	requestAPI := app.buildRequestAPI(requestQuote)
+	//app.writeJSON(w, http.StatusOK, requestAPI)
 
-	// verify valid
-	app.writeJSON(w, http.StatusOK, requestAPI)
+	// simulate request
+	responseAPI, err := app.postSimulateAPI(requestAPI)
+	if err != nil {
+		payload.Error = true
+		payload.Message = "Failed to connect to API"
+		payload.Data = err.Error()
+
+		app.writeJSON(w, http.StatusBadRequest, payload)
+		return
+	}
+	app.writeJSON(w, http.StatusOK, responseAPI)
 
 }
