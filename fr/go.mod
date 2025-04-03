@@ -7,6 +7,8 @@ require (
 	github.com/go-chi/cors v1.2.1
 )
 
+require gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
+
 require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
