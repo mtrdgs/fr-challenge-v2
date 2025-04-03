@@ -2,6 +2,8 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/mtrdgs/fr/data"
 )
 
 type jsonResponse struct {
@@ -84,5 +86,13 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	//app.writeJSON(w, http.StatusOK, responseQuote)
 
 	// save result in mongo
-	// TODO
+	_, err = data.InsertDB(quoteResult)
+	if err != nil {
+		payload.Error = true
+		payload.Message = "Failed to insert into Mongo"
+		payload.Data = err.Error()
+
+		app.writeJSON(w, http.StatusBadRequest, payload)
+		return
+	}
 }
