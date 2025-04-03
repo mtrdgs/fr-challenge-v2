@@ -25,6 +25,7 @@ func (app *Config) routes() http.Handler {
 
 	r.Post("/", app.Fr)
 	r.Post("/quote", app.Quote)
+	r.Get("/metrics", app.Metrics)
 
 	return r
 }
