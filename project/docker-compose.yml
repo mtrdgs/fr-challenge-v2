@@ -7,6 +7,10 @@ services:
     restart: always
     ports:
       - "8080:80"
+    environment:
+      REGISTERED_NUMBER: "25438296000158"
+      TOKEN: "1d52a9b6b78cf07b08586152459a5c90"
+      PLATFORM_CODE: "5AKVkHqCn"
 
   mongo:
     image: 'mongo:4.2.16-bionic'

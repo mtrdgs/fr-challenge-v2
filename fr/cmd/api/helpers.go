@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -234,9 +235,9 @@ func (app *Config) checkRequest(req requestQuote) (args []string) {
 
 func (app *Config) buildRequestAPI(reqQuote requestQuote) (reqAPI requestAPI) {
 	// shipper
-	reqAPI.Shipper.RegisteredNumber = "25438296000158"        // hardcoded for now
-	reqAPI.Shipper.Token = "1d52a9b6b78cf07b08586152459a5c90" // hardcoded for now
-	reqAPI.Shipper.PlatformCode = "5AKVkHqCn"                 // hardcoded for now
+	reqAPI.Shipper.RegisteredNumber = os.Getenv("REGISTERED_NUMBER")
+	reqAPI.Shipper.Token = os.Getenv("TOKEN")
+	reqAPI.Shipper.PlatformCode = os.Getenv("PLATFORM_CODE")
 
 	// recipient
 	reqAPI.Recipient.Type = 0        // fixed
@@ -245,7 +246,7 @@ func (app *Config) buildRequestAPI(reqQuote requestQuote) (reqAPI requestAPI) {
 
 	// dispatchers
 	var dispatcher dispatcher
-	dispatcher.RegisteredNumber = "25438296000158" // hardcoded for now
+	dispatcher.RegisteredNumber = os.Getenv("REGISTERED_NUMBER")
 	dispatcher.Zipcode = reqAPI.Recipient.Zipcode
 	for _, volume := range reqQuote.Volumes {
 		volume.UnitaryPrice = volume.Price / volume.Amount
@@ -265,8 +266,6 @@ func (app *Config) buildRequestAPI(reqQuote requestQuote) (reqAPI requestAPI) {
 }
 
 func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err error) {
-	path := "https://sp.freterapido.com/api/v3/quote/simulate" // hardcoded for now
-
 	// build request
 	payload, err := json.Marshal(reqAPI)
 	if err != nil {
@@ -274,7 +273,7 @@ func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err e
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPost, path, bytes.NewReader(payload))
+	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewReader(payload))
 	if err != nil {
 		return resAPI, err
 	}

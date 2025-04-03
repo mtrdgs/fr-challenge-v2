@@ -68,7 +68,6 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 
 	// build request (needed for external api)
 	requestAPI := app.buildRequestAPI(requestQuote)
-	//app.writeJSON(w, http.StatusOK, requestAPI)
 
 	// call simulate api
 	responseAPI, err := app.postSimulateAPI(requestAPI)
@@ -80,7 +79,6 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 		app.writeJSON(w, http.StatusBadRequest, payload)
 		return
 	}
-	//app.writeJSON(w, http.StatusOK, responseAPI)
 
 	// format response from api, to be used in mongo
 	quoteResult := app.formatResponseAPI(responseAPI)

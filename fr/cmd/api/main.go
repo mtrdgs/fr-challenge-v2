@@ -15,6 +15,7 @@ import (
 const (
 	defaultPort = "80"
 	mongoURL    = "mongodb://mongo:27017"
+	apiURL      = "https://sp.freterapido.com/api/v3/quote/simulate"
 )
 
 var client *mongo.Client
@@ -63,8 +64,8 @@ func connectToMongo() (*mongo.Client, error) {
 	// create client connection options
 	clientOptions := options.Client().ApplyURI(mongoURL)
 	clientOptions.SetAuth(options.Credential{
-		Username: "admin",    // hardcoded for now
-		Password: "password", // hardcoded for now
+		Username: "admin",
+		Password: "password",
 	})
 
 	// connect
