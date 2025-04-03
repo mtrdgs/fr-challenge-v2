@@ -214,7 +214,7 @@ func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err e
 }
 
 // formatResponseAPI - returns a json to be used in mongo insert operation, using info from freterapido api response
-func (app *Config) formatResponseAPI(entry responseAPI) (result data.QuoteEntry) {
+func (app *Config) formatResponseAPI(entry responseAPI, timeNow func() time.Time) (result data.QuoteEntry) {
 	// has dispatchers?
 	if len(entry.Dispatchers) == 0 {
 		return result
@@ -229,7 +229,7 @@ func (app *Config) formatResponseAPI(entry responseAPI) (result data.QuoteEntry)
 			Price:    value.FinalPrice,
 		})
 	}
-	result.CreatedAt = time.Now()
+	result.CreatedAt = timeNow()
 
 	return result
 }
