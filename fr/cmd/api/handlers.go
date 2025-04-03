@@ -81,7 +81,6 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 
 	// format response from api, to be used in mongo
 	quoteResult := app.formatResponseAPI(responseAPI)
-	//app.writeJSON(w, http.StatusOK, responseQuote)
 
 	// save result in mongo
 	err = app.Models.QuoteEntry.Insert(quoteResult)
@@ -93,4 +92,7 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 		app.writeJSON(w, http.StatusBadRequest, payload)
 		return
 	}
+
+	// done correctly!
+	app.writeJSON(w, http.StatusOK, quoteResult)
 }
