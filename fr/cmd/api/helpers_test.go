@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/mtrdgs/fr/data"
 )
@@ -153,7 +154,7 @@ func TestConfig_checkRequest(t *testing.T) {
 			name: "test #1 - invalid zipcode",
 			args: args{
 				req: requestQuote{
-					Recipient: recipient{
+					Recipient: recipientQuote{
 						Address: address{
 							Zipcode: "",
 						},
@@ -177,7 +178,7 @@ func TestConfig_checkRequest(t *testing.T) {
 			name: "test #2 - invalid volumes",
 			args: args{
 				req: requestQuote{
-					Recipient: recipient{
+					Recipient: recipientQuote{
 						Address: address{
 							Zipcode: "1234",
 						},
@@ -195,6 +196,221 @@ func TestConfig_checkRequest(t *testing.T) {
 			}
 			if gotArgs := app.checkRequest(tt.args.req); !reflect.DeepEqual(gotArgs, tt.wantArgs) {
 				t.Errorf("Config.checkRequest() = %v, want %v", gotArgs, tt.wantArgs)
+			}
+		})
+	}
+}
+
+func TestConfig_buildRequestAPI(t *testing.T) {
+	type fields struct {
+		Models data.Models
+	}
+	type args struct {
+		reqQuote requestQuote
+	}
+	tests := []struct {
+		name       string
+		fields     fields
+		args       args
+		wantReqAPI requestAPI
+	}{
+		{
+			name: "test #1 - valid request",
+			args: args{
+				reqQuote: requestQuote{
+					Recipient: recipientQuote{
+						Address: address{
+							Zipcode: "12345",
+						},
+					},
+					Volumes: []volume{
+						{
+							Category: "test",
+							Amount:   1,
+							Price:    100.0,
+							Sku:      "SKU123",
+							Height:   10.0,
+							Width:    5.0,
+							Length:   20.0,
+						},
+					},
+				},
+			},
+			wantReqAPI: requestAPI{
+				Recipient: recipientApi{
+					Type:    0,
+					Country: "BRA",
+					Zipcode: 12345,
+				},
+				Dispatchers: []dispatcher{
+					{
+						RegisteredNumber: "",
+						Zipcode:          12345,
+						Volumes: []volume{
+							{
+								Category:      "test",
+								Amount:        1,
+								UnitaryWeight: 0,
+								Price:         100.0,
+								UnitaryPrice:  100,
+								Sku:           "SKU123",
+								Height:        10.0,
+								Width:         5.0,
+								Length:        20.0,
+							},
+						},
+					},
+				},
+				SimulationType: []int{0},
+				Returns: returns{
+					Composition:  false,
+					Volumes:      false,
+					AppliedRules: false,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			app := &Config{
+				Models: tt.fields.Models,
+			}
+			if gotReqAPI := app.buildRequestAPI(tt.args.reqQuote); !reflect.DeepEqual(gotReqAPI, tt.wantReqAPI) {
+				t.Errorf("Config.buildRequestAPI() = %v, want %v", gotReqAPI, tt.wantReqAPI)
+			}
+		})
+	}
+}
+
+func TestConfig_postSimulateAPI(t *testing.T) {
+	type fields struct {
+		Models data.Models
+	}
+	type args struct {
+		reqAPI requestAPI
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "test #1 - invalid API request",
+			args: args{
+				reqAPI: requestAPI{
+					Recipient: recipientApi{
+						Type:    0,
+						Country: "BRA",
+						Zipcode: 12345,
+					},
+					Dispatchers: []dispatcher{
+						{
+							RegisteredNumber: "123456789",
+							Zipcode:          12345,
+							Volumes: []volume{
+								{
+									Category: "test",
+									Amount:   1,
+									Price:    100.0,
+									Sku:      "SKU123",
+									Height:   10.0,
+									Width:    5.0,
+									Length:   20.0,
+								},
+							},
+						},
+					},
+					SimulationType: []int{0},
+					Returns: returns{
+						Composition:  false,
+						Volumes:      false,
+						AppliedRules: false,
+					},
+				},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			app := &Config{
+				Models: tt.fields.Models,
+			}
+			_, err := app.postSimulateAPI(tt.args.reqAPI)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Config.postSimulateAPI() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			// if !reflect.DeepEqual(gotResAPI, tt.wantResAPI) {
+			// 	t.Errorf("Config.postSimulateAPI() = %v, want %v", gotResAPI, tt.wantResAPI)
+			// }
+		})
+	}
+}
+
+func TestConfig_formatResponseAPI(t *testing.T) {
+	type fields struct {
+		Models data.Models
+	}
+	type args struct {
+		entry responseAPI
+	}
+	tests := []struct {
+		name       string
+		fields     fields
+		args       args
+		wantResult data.QuoteEntry
+	}{
+		{
+			name: "test #1 - valid json",
+			args: args{
+				entry: responseAPI{
+					Dispatchers: []dispatcherAPI{
+						{
+							ID: "test",
+							Offers: []offer{
+								{
+									Modal:      "test",
+									FinalPrice: 1.5,
+									Carrier: carrier{
+										Name: "test",
+									},
+									CarrierOriginalDeliveryTime: carrierOriginalDeliveryTime{
+										Days: 1,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantResult: data.QuoteEntry{
+				Carrier: []data.Carrier{
+					{
+						Name:     "test",
+						Service:  "test",
+						Deadline: 1,
+						Price:    1.5,
+					},
+				},
+				CreatedAt: time.Date(2025, 4, 3, 12, 0, 0, 0, time.UTC), // mocked time
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			app := &Config{
+				Models: tt.fields.Models,
+			}
+
+			// mock time provider
+			mockTimeProvider := func() time.Time {
+				return time.Date(2025, 4, 3, 12, 0, 0, 0, time.UTC)
+			}
+
+			if gotResult := app.formatResponseAPI(tt.args.entry, mockTimeProvider); !reflect.DeepEqual(gotResult, tt.wantResult) {
+				t.Errorf("Config.formatResponseAPI() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})
 	}
