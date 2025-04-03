@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/mtrdgs/fr/data"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -19,6 +20,7 @@ const (
 var client *mongo.Client
 
 type Config struct {
+	Models data.Models
 }
 
 func main() {
@@ -40,7 +42,9 @@ func main() {
 		}
 	}()
 
-	app := Config{}
+	app := Config{
+		Models: data.New(client),
+	}
 
 	log.Printf("Starting server on port %s.", defaultPort)
 
@@ -51,7 +55,7 @@ func main() {
 
 	err = srv.ListenAndServe()
 	if err != nil {
-		log.Panic(err)
+		log.Panic()
 	}
 }
 

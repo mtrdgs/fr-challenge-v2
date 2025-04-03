@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mtrdgs/fr/data"
 )
 
 // RequestAPI
@@ -286,7 +288,7 @@ func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err e
 	return resAPI, nil
 }
 
-func (app *Config) formatResponseAPI(entry responseAPI) (result QuoteEntry) {
+func (app *Config) formatResponseAPI(entry responseAPI) (result data.QuoteEntry) {
 	// has dispatchers?
 	if len(entry.Dispatchers) == 0 {
 		return result
@@ -294,7 +296,7 @@ func (app *Config) formatResponseAPI(entry responseAPI) (result QuoteEntry) {
 
 	// format response from api
 	for _, value := range entry.Dispatchers[0].Offers {
-		result.Carrier = append(result.Carrier, Carrier{
+		result.Carrier = append(result.Carrier, data.Carrier{
 			Name:     value.Carrier.Name,
 			Service:  value.Modal,
 			Deadline: value.CarrierOriginalDeliveryTime.Days,

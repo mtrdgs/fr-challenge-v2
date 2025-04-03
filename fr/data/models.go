@@ -4,40 +4,56 @@ import (
 	"context"
 	"log"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type quoteEntry struct {
-	Carrier   []Carrier `json:"carrier"`
-	CreatedAt time.Time `json:"created_at"`
+var client *mongo.Client
+
+func New(mongo *mongo.Client) Models {
+	client = mongo
+
+	return Models{
+		QuoteEntry: QuoteEntry{},
+	}
+}
+
+type Models struct {
+	QuoteEntry QuoteEntry
+}
+
+type QuoteEntry struct {
+	Carrier   []Carrier `bson:"carrier" json:"carrier"`
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 }
 
 // Carrier -
 type Carrier struct {
-	Name     string  `json:"name"`
-	Service  string  `json:"service"`
-	Deadline int     `json:"deadline"`
-	Price    float64 `json:"price"`
+	Name     string  `bson:"name" json:"name"`
+	Service  string  `bson:"service" json:"service"`
+	Deadline int     `bson:"deadline" json:"deadline"`
+	Price    float64 `bson:"price" json:"price"`
 }
 
-func InsertDB(entry quoteEntry) (insert quoteEntry, err error) {
+func (q *QuoteEntry) Insert(entry QuoteEntry) error {
 	collection := client.Database("fr").Collection("quotes")
 
 	for _, value := range entry.Carrier {
-		insert.Carrier = append(insert.Carrier, Carrier{
+		q.Carrier = append(q.Carrier, Carrier{
 			Name:     value.Name,
 			Service:  value.Service,
 			Deadline: value.Deadline,
 			Price:    value.Price,
 		})
 	}
-	insert.CreatedAt = time.Now()
+	q.CreatedAt = time.Now()
 
 	// save
-	_, err = collection.InsertOne(context.TODO(), insert)
+	_, err := collection.InsertOne(context.TODO(), q)
 	if err != nil {
 		log.Println("Error inserting into quotes: ", err)
-		return insert, err
+		return err
 	}
 
-	return insert, nil
+	return nil
 }
