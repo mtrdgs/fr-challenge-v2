@@ -13,13 +13,26 @@ type jsonResponse struct {
 	Data    any    `json:"data,omitempty"`
 }
 
+// type requestQuote struct {
+// 	Recipient struct {
+// 		Address struct {
+// 			Zipcode string `json:"zipcode"`
+// 		} `json:"address"`
+// 	} `json:"recipient"`
+// 	Volumes []volume `json:"volumes"`
+// }
+
 type requestQuote struct {
-	Recipient struct {
-		Address struct {
-			Zipcode string `json:"zipcode"`
-		} `json:"address"`
-	} `json:"recipient"`
-	Volumes []volume `json:"volumes"`
+	Recipient recipient `json:"recipient"`
+	Volumes   []volume  `json:"volumes"`
+}
+
+type recipient struct {
+	Address address `json:"address"`
+}
+
+type address struct {
+	Zipcode string `json:"zipcode"`
 }
 
 type volume struct {
