@@ -1,7 +1,10 @@
 package main
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type jsonResponse struct {
@@ -95,4 +98,31 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 
 	// done correctly!
 	app.writeJSON(w, http.StatusOK, quoteResult)
+}
+
+func (app *Config) Metrics(w http.ResponseWriter, r *http.Request) {
+	var lastQuotes int64
+	var err error
+
+	// check if quertystring is set
+	queryString := r.URL.Query().Get("last_quotes")
+	if !strings.EqualFold(queryString, "") {
+		// it is! let's see if it has a valid entry
+		lastQuotes, _ = strconv.ParseInt(queryString, 10, 64)
+		if lastQuotes == 0 {
+			app.errorJSON(w, errors.New("invalid 'last_quotes' value"), http.StatusBadRequest)
+			return
+		}
+	} else {
+		app.errorJSON(w, errors.New("parameter 'last_quotes' is required"), http.StatusBadRequest)
+		return
+	}
+
+	// retrieve quotes from db
+	quotes, err := app.Models.QuoteEntry.FindSpecific(lastQuotes)
+	if err != nil {
+		app.errorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	app.writeJSON(w, http.StatusOK, quotes)
 }
