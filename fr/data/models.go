@@ -37,6 +37,7 @@ type Carrier struct {
 	Price    float64 `bson:"price" json:"price"`
 }
 
+// Insert - stores quotes from freterapido api in bd
 func (q *QuoteEntry) Insert(entry QuoteEntry) error {
 	collection := client.Database("fr").Collection("quotes")
 
@@ -62,6 +63,7 @@ func (q *QuoteEntry) Insert(entry QuoteEntry) error {
 	return nil
 }
 
+// FindSpecific - gets list of quotes from db
 func (q *QuoteEntry) FindSpecific(amount int64) (quotes []QuoteEntry, err error) {
 	var cursor *mongo.Cursor
 
