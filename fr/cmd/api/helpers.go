@@ -123,6 +123,7 @@ type metric struct {
 	PriciestFreight      map[string]float64 `json:"priciest_freight"`
 }
 
+// writeJSON - writes a json response to client (from a response's status code and data)
 func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
@@ -146,6 +147,7 @@ func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, header
 	return nil
 }
 
+// readJSON - reads a request's body and converts it into json
 func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := 1048576 // 1Mb
 
@@ -165,6 +167,7 @@ func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) er
 	return nil
 }
 
+// errorJSON - sends a json error response to client
 func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
 
@@ -179,6 +182,7 @@ func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) er
 	return app.writeJSON(w, statusCode, payload)
 }
 
+// checkRequest - verifies if user's request has all needed arguments
 func (app *Config) checkRequest(req requestQuote) (args []string) {
 	args = make([]string, 0)
 
@@ -233,6 +237,7 @@ func (app *Config) checkRequest(req requestQuote) (args []string) {
 	return args
 }
 
+// buildRequestAPI - creates request to be used at freterapido api from user's input
 func (app *Config) buildRequestAPI(reqQuote requestQuote) (reqAPI requestAPI) {
 	// shipper
 	reqAPI.Shipper.RegisteredNumber = os.Getenv("REGISTERED_NUMBER")
@@ -265,6 +270,7 @@ func (app *Config) buildRequestAPI(reqQuote requestQuote) (reqAPI requestAPI) {
 	return reqAPI
 }
 
+// postSimulateAPI - calls freterapido api
 func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err error) {
 	// build request
 	payload, err := json.Marshal(reqAPI)
@@ -301,6 +307,7 @@ func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err e
 	return resAPI, nil
 }
 
+// formatResponseAPI - returns a json to be used in mongo insert operation, using info from freterapido api response
 func (app *Config) formatResponseAPI(entry responseAPI) (result data.QuoteEntry) {
 	// has dispatchers?
 	if len(entry.Dispatchers) == 0 {
@@ -321,6 +328,7 @@ func (app *Config) formatResponseAPI(entry responseAPI) (result data.QuoteEntry)
 	return result
 }
 
+// prepareMetricsResponse - calcs the info from quotes (stored in the db) and formats it as readable json to send to client"
 func (app *Config) prepareMetricsResponse(quotes []data.QuoteEntry) responseMetrics {
 	// create map to store metrics
 	mapMetrics := metric{

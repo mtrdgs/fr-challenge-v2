@@ -34,6 +34,7 @@ type volume struct {
 	Length        float64 `json:"length"`
 }
 
+// Fr - a test page to see if there's connectivity/response
 func (app *Config) Fr(w http.ResponseWriter, r *http.Request) {
 	payload := jsonResponse{
 		Error:   false,
@@ -43,6 +44,7 @@ func (app *Config) Fr(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, payload)
 }
 
+// Quote -
 func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	requestQuote := requestQuote{}
 	payload := jsonResponse{}
@@ -69,11 +71,11 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	// build request (needed for external api)
 	requestAPI := app.buildRequestAPI(requestQuote)
 
-	// call simulate api
+	// call freterapido api (simulate module)
 	responseAPI, err := app.postSimulateAPI(requestAPI)
 	if err != nil {
 		payload.Error = true
-		payload.Message = "Failed to connect to API"
+		payload.Message = "Failed to connect to freterapido API"
 		payload.Data = err.Error()
 
 		app.writeJSON(w, http.StatusBadRequest, payload)
@@ -98,6 +100,7 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, quoteResult)
 }
 
+// Metrics -
 func (app *Config) Metrics(w http.ResponseWriter, r *http.Request) {
 	var lastQuotes int64
 	var err error
@@ -105,7 +108,7 @@ func (app *Config) Metrics(w http.ResponseWriter, r *http.Request) {
 	// check if quertystring is set
 	queryString := r.URL.Query().Get("last_quotes")
 	if !strings.EqualFold(queryString, "") {
-		// it is! let's see if it has a valid entry
+		// it is! let's see if it has a valid entry (any int number)
 		lastQuotes, err = strconv.ParseInt(queryString, 10, 64)
 		if err != nil {
 			app.errorJSON(w, errors.New("invalid 'last_quotes' value"), http.StatusBadRequest)
