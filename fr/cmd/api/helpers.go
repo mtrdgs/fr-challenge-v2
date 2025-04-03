@@ -99,7 +99,7 @@ func (app *Config) checkRequest(req requestQuote) (args []string) {
 
 	// contains volume?
 	if len(req.Volumes) == 0 {
-		args = append(args, "Volumes is required")
+		args = append(args, "Volumes are required")
 	}
 
 	// contains specific variables?
