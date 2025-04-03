@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -103,19 +105,23 @@ func TestConfig_errorJSON(t *testing.T) {
 		status []int
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
+		name       string
+		fields     fields
+		args       args
+		wantErr    bool
+		wantStatus int
+		wantBody   string
 	}{
 		{
-			name: "test #1 - valid json",
+			name: "test #1 - valid error",
 			args: args{
 				w:      httptest.NewRecorder(),
-				err:    nil,
-				status: []int{http.StatusAccepted},
+				err:    errors.New("error"),
+				status: []int{http.StatusBadGateway},
 			},
-			wantErr: false,
+			wantErr:    false,
+			wantStatus: http.StatusBadGateway,
+			wantBody:   `{"error":true,"message":"something went wrong"}`,
 		},
 	}
 	for _, tt := range tests {
@@ -125,6 +131,70 @@ func TestConfig_errorJSON(t *testing.T) {
 			}
 			if err := app.errorJSON(tt.args.w, tt.args.err, tt.args.status...); (err != nil) != tt.wantErr {
 				t.Errorf("Config.errorJSON() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestConfig_checkRequest(t *testing.T) {
+	type fields struct {
+		Models data.Models
+	}
+	type args struct {
+		req requestQuote
+	}
+	tests := []struct {
+		name     string
+		fields   fields
+		args     args
+		wantArgs []string
+	}{
+		{
+			name: "test #1 - invalid zipcode",
+			args: args{
+				req: requestQuote{
+					Recipient: recipient{
+						Address: address{
+							Zipcode: "",
+						},
+					},
+					Volumes: []volume{
+						{
+							Category: "electronics",
+							Amount:   1,
+							Price:    100.0,
+							Sku:      "SKU123",
+							Height:   10.0,
+							Width:    5.0,
+							Length:   20.0,
+						},
+					},
+				},
+			},
+			wantArgs: []string{"Zipcode is required"},
+		},
+		{
+			name: "test #2 - invalid volumes",
+			args: args{
+				req: requestQuote{
+					Recipient: recipient{
+						Address: address{
+							Zipcode: "1234",
+						},
+					},
+					Volumes: []volume{},
+				},
+			},
+			wantArgs: []string{"Volumes are required"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			app := &Config{
+				Models: tt.fields.Models,
+			}
+			if gotArgs := app.checkRequest(tt.args.req); !reflect.DeepEqual(gotArgs, tt.wantArgs) {
+				t.Errorf("Config.checkRequest() = %v, want %v", gotArgs, tt.wantArgs)
 			}
 		})
 	}
