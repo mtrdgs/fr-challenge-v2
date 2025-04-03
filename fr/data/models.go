@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var client *mongo.Client
@@ -56,4 +58,30 @@ func (q *QuoteEntry) Insert(entry QuoteEntry) error {
 	}
 
 	return nil
+}
+
+func (q *QuoteEntry) FindSpecific(amount int64) (quotes []QuoteEntry, err error) {
+	var cursor *mongo.Cursor
+
+	collection := client.Database("fr").Collection("quotes")
+
+	if amount > 0 {
+		cursor, err = collection.Find(context.TODO(), bson.M{}, options.Find().SetLimit(amount).SetSort(bson.M{"created_at": -1}))
+	} else {
+		cursor, err = collection.Find(context.TODO(), bson.M{})
+	}
+
+	if err != nil {
+		log.Printf("Error retrieving quotes: %v", err)
+		return quotes, err
+	}
+
+	// convert cursor into array
+	err = cursor.All(context.TODO(), &quotes)
+	if err != nil {
+		log.Printf("Error converting quotes into JSON: %v", err)
+		return quotes, err
+	}
+
+	return quotes, err
 }
