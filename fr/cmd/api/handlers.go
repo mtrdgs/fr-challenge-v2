@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type jsonResponse struct {
@@ -23,11 +24,11 @@ type jsonResponse struct {
 // }
 
 type requestQuote struct {
-	Recipient recipient `json:"recipient"`
-	Volumes   []volume  `json:"volumes"`
+	Recipient recipientQuote `json:"recipient"`
+	Volumes   []volume       `json:"volumes"`
 }
 
-type recipient struct {
+type recipientQuote struct {
 	Address address `json:"address"`
 }
 
@@ -96,7 +97,9 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// format response from api, to be used in mongo
-	quoteResult := app.formatResponseAPI(responseAPI)
+	quoteResult := app.formatResponseAPI(responseAPI, func() time.Time {
+		return time.Now()
+	})
 
 	// save result in mongo
 	err = app.Models.QuoteEntry.Insert(quoteResult)
