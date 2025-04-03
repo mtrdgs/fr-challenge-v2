@@ -108,6 +108,20 @@ type Carrier struct {
 	Price    float64 `json:"price"`
 }
 
+// ResponseMetrics -
+type responseMetrics struct {
+	Metrics []metric `json:"metrics"`
+}
+
+// Metric -
+type metric struct {
+	ResultsPerCarrier    map[string]int     `json:"results_per_carrier"`
+	TotalPricePerCarrier map[string]float64 `json:"total_price_per_carrier"`
+	AvgPricePerCarrier   map[string]float64 `json:"avg_price_per_carrier"`
+	CheapestFreight      map[string]float64 `json:"cheapest_freight"`
+	PriciestFreight      map[string]float64 `json:"priciest_freight"`
+}
+
 func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
@@ -306,4 +320,44 @@ func (app *Config) formatResponseAPI(entry responseAPI) (result data.QuoteEntry)
 	result.CreatedAt = time.Now()
 
 	return result
+}
+
+func (app *Config) prepareMetricsResponse(quotes []data.QuoteEntry) responseMetrics {
+	// create map to store metrics
+	mapMetrics := metric{
+		ResultsPerCarrier:    make(map[string]int),
+		TotalPricePerCarrier: make(map[string]float64),
+		AvgPricePerCarrier:   make(map[string]float64),
+		CheapestFreight:      make(map[string]float64),
+		PriciestFreight:      make(map[string]float64),
+	}
+
+	// iterate over quotes
+	for _, quote := range quotes {
+		for _, carrier := range quote.Carrier {
+			// total results
+			mapMetrics.ResultsPerCarrier[carrier.Name]++
+
+			// total price
+			mapMetrics.TotalPricePerCarrier[carrier.Name] = (mapMetrics.TotalPricePerCarrier[carrier.Name] + carrier.Price)
+			mapMetrics.TotalPricePerCarrier[carrier.Name] = float64(int(mapMetrics.TotalPricePerCarrier[carrier.Name]*100)) / 100
+
+			// avg price
+			mapMetrics.AvgPricePerCarrier[carrier.Name] = mapMetrics.TotalPricePerCarrier[carrier.Name] / float64(mapMetrics.ResultsPerCarrier[carrier.Name])
+			mapMetrics.AvgPricePerCarrier[carrier.Name] = float64(int(mapMetrics.AvgPricePerCarrier[carrier.Name]*100)) / 100
+
+			// cheapest freight
+			if mapMetrics.CheapestFreight[carrier.Name] == 0 || carrier.Price < mapMetrics.CheapestFreight[carrier.Name] {
+				mapMetrics.CheapestFreight[carrier.Name] = carrier.Price
+			}
+
+			// priciest freight
+			if mapMetrics.PriciestFreight[carrier.Name] == 0 || carrier.Price > mapMetrics.PriciestFreight[carrier.Name] {
+				mapMetrics.PriciestFreight[carrier.Name] = carrier.Price
+			}
+		}
+	}
+
+	// append metrics to response
+	return responseMetrics{Metrics: []metric{mapMetrics}}
 }
