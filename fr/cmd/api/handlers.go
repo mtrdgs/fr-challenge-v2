@@ -124,5 +124,10 @@ func (app *Config) Metrics(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, err, http.StatusBadRequest)
 		return
 	}
-	app.writeJSON(w, http.StatusOK, quotes)
+
+	// format quotes
+	responseMetrics := app.prepareMetricsResponse(quotes)
+
+	// done correctly!
+	app.writeJSON(w, http.StatusOK, responseMetrics)
 }
