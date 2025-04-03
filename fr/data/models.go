@@ -40,6 +40,8 @@ type Carrier struct {
 func (q *QuoteEntry) Insert(entry QuoteEntry) error {
 	collection := client.Database("fr").Collection("quotes")
 
+	q.Carrier = []Carrier{}
+
 	for _, value := range entry.Carrier {
 		q.Carrier = append(q.Carrier, Carrier{
 			Name:     value.Name,
