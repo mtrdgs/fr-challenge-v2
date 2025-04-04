@@ -5,47 +5,12 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type jsonResponse struct {
 	Error   bool   `json:"error"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
-}
-
-// type requestQuote struct {
-// 	Recipient struct {
-// 		Address struct {
-// 			Zipcode string `json:"zipcode"`
-// 		} `json:"address"`
-// 	} `json:"recipient"`
-// 	Volumes []volume `json:"volumes"`
-// }
-
-type requestQuote struct {
-	Recipient recipientQuote `json:"recipient"`
-	Volumes   []volume       `json:"volumes"`
-}
-
-type recipientQuote struct {
-	Address address `json:"address"`
-}
-
-type address struct {
-	Zipcode string `json:"zipcode"`
-}
-
-type volume struct {
-	Category      string  `json:"category"`
-	Amount        int     `json:"amount"`
-	UnitaryWeight int     `json:"unitary_weight"`
-	Price         int     `json:"price"`
-	UnitaryPrice  int     `json:"unitary_price"`
-	Sku           string  `json:"sku"`
-	Height        float64 `json:"height"`
-	Width         float64 `json:"width"`
-	Length        float64 `json:"length"`
 }
 
 // Fr - a test page to see if there's connectivity/response
@@ -97,12 +62,10 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// format response from api, to be used in mongo
-	quoteResult := app.formatResponseAPI(responseAPI, func() time.Time {
-		return time.Now()
-	})
+	quoteResult := app.formatResponseAPI(responseAPI)
 
 	// save result in mongo
-	err = app.Models.QuoteEntry.Insert(quoteResult)
+	err = app.Repo.Insert(quoteResult)
 	if err != nil {
 		payload.Error = true
 		payload.Message = "Failed to insert into Mongo"
@@ -133,7 +96,7 @@ func (app *Config) Metrics(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// retrieve quotes from db
-	quotes, err := app.Models.QuoteEntry.FindSpecific(lastQuotes)
+	quotes, err := app.Repo.FindSpecific(lastQuotes)
 	if err != nil {
 		app.errorJSON(w, err, http.StatusBadRequest)
 		return
