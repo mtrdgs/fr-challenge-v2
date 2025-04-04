@@ -10,7 +10,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/mtrdgs/fr/data"
 )
@@ -184,7 +183,6 @@ func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err e
 		return resAPI, err
 	}
 
-	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPost, apiURL, bytes.NewReader(payload))
 	if err != nil {
 		return resAPI, err
@@ -194,7 +192,7 @@ func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err e
 	req.Header.Set("Accept", "application/json")
 
 	// send request
-	res, err := client.Do(req)
+	res, err := app.Client.Do(req)
 	if err != nil {
 		return resAPI, err
 	}
@@ -214,7 +212,7 @@ func (app *Config) postSimulateAPI(reqAPI requestAPI) (resAPI responseAPI, err e
 }
 
 // formatResponseAPI - returns a json to be used in mongo insert operation, using info from freterapido api response
-func (app *Config) formatResponseAPI(entry responseAPI, timeNow func() time.Time) (result data.QuoteEntry) {
+func (app *Config) formatResponseAPI(entry responseAPI) (result data.QuoteEntry) {
 	// has dispatchers?
 	if len(entry.Dispatchers) == 0 {
 		return result
@@ -229,7 +227,6 @@ func (app *Config) formatResponseAPI(entry responseAPI, timeNow func() time.Time
 			Price:    value.FinalPrice,
 		})
 	}
-	result.CreatedAt = timeNow()
 
 	return result
 }
