@@ -104,7 +104,7 @@ func (app *Config) checkRequest(req requestQuote) (args []string) {
 	// contains specific variables?
 	for key, value := range req.Volumes {
 		// category
-		if strings.EqualFold(value.Category, "") {
+		if value.Category == 0 {
 			args = append(args, fmt.Sprintf("Category is required for Volume[%d]", key))
 		}
 
@@ -157,9 +157,19 @@ func (app *Config) buildRequestAPI(reqQuote requestQuote) (reqAPI requestAPI) {
 	// dispatchers
 	var dispatcher dispatcher
 	dispatcher.RegisteredNumber = os.Getenv("REGISTERED_NUMBER")
-	dispatcher.Zipcode = reqAPI.Recipient.Zipcode
-	for _, volume := range reqQuote.Volumes {
-		volume.UnitaryPrice = volume.Price / volume.Amount
+	dispatcher.Zipcode, _ = strconv.Atoi(os.Getenv("ZIPCODE"))
+	for _, value := range reqQuote.Volumes {
+		var volume volumeApi
+		volume.Amount = value.Amount
+		volume.Category = strconv.Itoa(value.Category)
+		volume.Height = value.Height
+		volume.Length = value.Length
+		volume.Price = value.Price
+		volume.Sku = value.Sku
+		volume.UnitaryPrice = value.Price / value.Amount
+		volume.UnitaryWeight = value.UnitaryWeight
+		volume.Width = value.Width
+
 		dispatcher.Volumes = append(dispatcher.Volumes, volume)
 	}
 	reqAPI.Dispatchers = append(reqAPI.Dispatchers, dispatcher)
