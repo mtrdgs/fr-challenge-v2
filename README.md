@@ -201,7 +201,7 @@ curl --location 'http://localhost:8080/quote' \
 Calculates metrics using information from stored quotes in the database (where `n` specifies the number of quotes in descending order) and then displays the results for the user.
 
 #### Parameters
-* `last_quotes`: Indicates the number of quotes (n) used to calculate metrics
+* `last_quotes`: Indicates the amount of quotes used to calculate metrics
 
 #### Request
 ```bash
