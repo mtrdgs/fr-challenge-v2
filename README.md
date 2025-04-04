@@ -76,12 +76,12 @@ curl --location 'http://localhost:8080/quote' \
 --data '{
     "recipient": {
         "address": {
-            "zipcode": "29161376"
+            "zipcode": "01311000"
         }
     },
     "volumes": [
         {
-            "category": "7",
+            "category": 7,
             "amount": 1,
             "unitary_weight": 5,
             "price": 349,
@@ -91,7 +91,7 @@ curl --location 'http://localhost:8080/quote' \
             "length": 0.2
         },
         {
-            "category": "7",
+            "category": 7,
             "amount": 2,
             "unitary_weight": 4,
             "price": 556,
