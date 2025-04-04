@@ -22,6 +22,7 @@ func TestConfig_routes(t *testing.T) {
 
 }
 
+// routeExists - checks if route is registered
 func routeExists(t *testing.T, routes chi.Router, route string) {
 	found := false
 	_ = chi.Walk(routes, func(method string, foundRoute string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {

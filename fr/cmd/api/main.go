@@ -64,6 +64,7 @@ func main() {
 	}
 }
 
+// connectToMongo - connects to mongo and returns a client and potential error
 func connectToMongo() (*mongo.Client, error) {
 	// create client connection options
 	clientOptions := options.Client().ApplyURI(mongoURL)
@@ -83,6 +84,7 @@ func connectToMongo() (*mongo.Client, error) {
 	return c, nil
 }
 
+// setUpRepo - sets up the repository to be used in the app
 func (app *Config) setUpRepo(conn *mongo.Client) {
 	mongo := data.NewMongoRepository(conn)
 	app.Repo = mongo

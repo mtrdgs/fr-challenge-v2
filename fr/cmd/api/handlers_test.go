@@ -13,6 +13,7 @@ import (
 var testApp Config
 
 func TestConfig_Quote(t *testing.T) {
+	// call mocked repository
 	repo := data.NewMongoTestRepository(nil)
 	testApp.Repo = repo
 
@@ -34,6 +35,7 @@ func TestConfig_Quote(t *testing.T) {
 }
 
 func TestConfig_Metrics(t *testing.T) {
+	// call mocked repository
 	repo := data.NewMongoTestRepository(nil)
 	testApp.Repo = repo
 

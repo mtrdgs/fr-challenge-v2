@@ -23,7 +23,7 @@ func (app *Config) Fr(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, payload)
 }
 
-// Quote -
+// Quote - handles user request to get a quote from freteapido api
 func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	requestQuote := requestQuote{}
 	payload := jsonResponse{}
@@ -79,7 +79,7 @@ func (app *Config) Quote(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, quoteResult)
 }
 
-// Metrics -
+// Metrics - handles the request to calc the metrics using quotes info from db
 func (app *Config) Metrics(w http.ResponseWriter, r *http.Request) {
 	var lastQuotes int64
 	var err error

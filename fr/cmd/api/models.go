@@ -2,19 +2,23 @@ package main
 
 import "time"
 
+// RequestQuote -
 type requestQuote struct {
 	Recipient recipientQuote `json:"recipient"`
 	Volumes   []volume       `json:"volumes"`
 }
 
+// RecipientQuote -
 type recipientQuote struct {
 	Address address `json:"address"`
 }
 
+// Address -
 type address struct {
 	Zipcode string `json:"zipcode"`
 }
 
+// Volume -
 type volume struct {
 	Category      int     `json:"category"`
 	Amount        int     `json:"amount"`
@@ -27,7 +31,7 @@ type volume struct {
 	Length        float64 `json:"length"`
 }
 
-// RequestAPI
+// RequestAPI -
 type requestAPI struct {
 	Shipper        shipper      `json:"shipper"`
 	Recipient      recipientApi `json:"recipient"`

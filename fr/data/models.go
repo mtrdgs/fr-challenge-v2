@@ -16,6 +16,7 @@ type MongoRepository struct {
 	Conn *mongo.Client
 }
 
+// NewMongoRepository - creates a new mongo repository and returns it
 func NewMongoRepository(mongo *mongo.Client) *MongoRepository {
 	client = mongo
 	return &MongoRepository{
@@ -23,25 +24,13 @@ func NewMongoRepository(mongo *mongo.Client) *MongoRepository {
 	}
 }
 
-// func New(mongo *mongo.Client) Models {
-// 	client = mongo
-
-// 	return Models{
-// 		QuoteEntry: QuoteEntry{},
-// 	}
-// }
-
-// type Models struct {
-// 	QuoteEntry QuoteEntry
-// }
-
-// QuoteEntry -
+// QuoteEntry - struct to be used in bd (insert and find)
 type QuoteEntry struct {
 	Carrier   []Carrier  `bson:"carrier" json:"carrier"`
 	CreatedAt *time.Time `bson:"created_at" json:"created_at,omitempty"`
 }
 
-// Carrier -
+// Carrier - struct to be used in bd (insert and find)
 type Carrier struct {
 	Name     string  `bson:"name" json:"name"`
 	Service  string  `bson:"service" json:"service"`
@@ -53,6 +42,8 @@ type Carrier struct {
 func (q *MongoRepository) Insert(entry QuoteEntry) error {
 	collection := client.Database("fr").Collection("quotes")
 
+	// little hack to trigger omitempty in json
+	// this way created_at accepts nil as value
 	currentTime := time.Now()
 	entry.CreatedAt = &currentTime
 
