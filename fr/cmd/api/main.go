@@ -21,7 +21,8 @@ const (
 var client *mongo.Client
 
 type Config struct {
-	Models data.Models
+	Repo   data.RepositoryPattern
+	Client *http.Client
 }
 
 func main() {
@@ -44,8 +45,11 @@ func main() {
 	}()
 
 	app := Config{
-		Models: data.New(client),
+		Client: &http.Client{},
+		//Models: data.New(client),
 	}
+
+	app.setUpRepo(client)
 
 	log.Printf("Starting server on port %s.", defaultPort)
 
@@ -77,4 +81,9 @@ func connectToMongo() (*mongo.Client, error) {
 	log.Println("Connected to Mongo!")
 
 	return c, nil
+}
+
+func (app *Config) setUpRepo(conn *mongo.Client) {
+	mongo := data.NewMongoRepository(conn)
+	app.Repo = mongo
 }
