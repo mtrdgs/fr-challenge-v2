@@ -2,6 +2,31 @@ package main
 
 import "time"
 
+type requestQuote struct {
+	Recipient recipientQuote `json:"recipient"`
+	Volumes   []volume       `json:"volumes"`
+}
+
+type recipientQuote struct {
+	Address address `json:"address"`
+}
+
+type address struct {
+	Zipcode string `json:"zipcode"`
+}
+
+type volume struct {
+	Category      string  `json:"category"`
+	Amount        int     `json:"amount"`
+	UnitaryWeight int     `json:"unitary_weight"`
+	Price         int     `json:"price"`
+	UnitaryPrice  int     `json:"unitary_price"`
+	Sku           string  `json:"sku"`
+	Height        float64 `json:"height"`
+	Width         float64 `json:"width"`
+	Length        float64 `json:"length"`
+}
+
 // RequestAPI
 type requestAPI struct {
 	Shipper        shipper      `json:"shipper"`
