@@ -180,7 +180,7 @@ func TestConfig_checkRequest(t *testing.T) {
 					},
 					Volumes: []volume{
 						{
-							Category: "test",
+							Category: 1,
 							Amount:   1,
 							Price:    100.0,
 							Sku:      "SKU123",
@@ -241,7 +241,7 @@ func TestConfig_buildRequestAPI(t *testing.T) {
 					},
 					Volumes: []volume{
 						{
-							Category: "test",
+							Category: 1,
 							Amount:   1,
 							Price:    100.0,
 							Sku:      "SKU123",
@@ -262,9 +262,9 @@ func TestConfig_buildRequestAPI(t *testing.T) {
 					{
 						RegisteredNumber: "",
 						Zipcode:          12345,
-						Volumes: []volume{
+						Volumes: []volumeApi{
 							{
-								Category:      "test",
+								Category:      "1",
 								Amount:        1,
 								UnitaryWeight: 0,
 								Price:         100.0,
