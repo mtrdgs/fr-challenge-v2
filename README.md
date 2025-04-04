@@ -4,7 +4,7 @@
 ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
 
 ## Description
-This project is a freight quote simulator that uses an API from Frete Rápido to perform quote calculations and return the available carriers for delivery along with their charges.
+This project is a freight quote simulator that uses an API from Frete Rápido to perform quote calculations and return the available carriers for delivery along with their pricing.
 
 The information related to the quotes is saved in a database and used to calculate metrics (such as the highest price), which are then displayed to the user.
 
@@ -59,7 +59,7 @@ make up_build
 ```
 or
 ```bash
-docker compose up --build -d
+docker-compose up --build -d
 ```
 
 Obs.: This application runs at `http://localhost:8080/`.
