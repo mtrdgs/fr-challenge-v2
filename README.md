@@ -108,7 +108,7 @@ curl --location 'http://localhost:8080/quote' \
 ```json
 {
     "carrier": [
-        // ...
+        # ...
         {
             "name": "BTU BRASPRESS",
             "service": "Rodoviário",
@@ -128,7 +128,7 @@ curl --location 'http://localhost:8080/quote' \
             "deadline": 3,
             "price": 332.53
         }
-        /// ...
+        # ...
     ]
 }
 ```
