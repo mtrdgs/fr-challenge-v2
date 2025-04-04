@@ -108,27 +108,90 @@ curl --location 'http://localhost:8080/quote' \
 ```json
 {
     "carrier": [
-        # ...
+        {
+            "name": "BOX DELIVERY",
+            "service": "Rodoviário",
+            "deadline": 0,
+            "price": 0
+        },
+        {
+            "name": "BOX DELIVERY",
+            "service": "Rodoviário",
+            "deadline": 0,
+            "price": 0
+        },
+        {
+            "name": "AZUL CARGO",
+            "service": "Aéreo",
+            "deadline": 2,
+            "price": 41.82
+        },
+        {
+            "name": "AZUL CARGO",
+            "service": "Aéreo",
+            "deadline": 0,
+            "price": 41.82
+        },
+        {
+            "name": "PRESSA FR (TESTE)",
+            "service": "Rodoviário",
+            "deadline": 0,
+            "price": 58.95
+        },
+        {
+            "name": "FR EXPRESS (TESTE)",
+            "service": "Rodoviário",
+            "deadline": 3,
+            "price": 74.95
+        },
         {
             "name": "BTU BRASPRESS",
             "service": "Rodoviário",
-            "deadline": 4,
-            "price": 78.63
+            "deadline": 5,
+            "price": 93.35
         },
         {
             "name": "CORREIOS",
             "service": "Rodoviário",
-            "deadline": 3,
-            "price": 332.53
+            "deadline": 5,
+            "price": 103.71
         },
-
         {
             "name": "CORREIOS - SEDEX",
             "service": "Rodoviário",
-            "deadline": 3,
-            "price": 332.53
+            "deadline": 6,
+            "price": 121.03
+        },
+        {
+            "name": "CORREIOS",
+            "service": "Rodoviário",
+            "deadline": 6,
+            "price": 121.03
+        },
+        {
+            "name": "BRASPRESS",
+            "service": "Rodoviário",
+            "deadline": 4,
+            "price": 133.58
+        },
+        {
+            "name": "CORREIOS",
+            "service": "Rodoviário",
+            "deadline": 1,
+            "price": 168.43
+        },
+        {
+            "name": "CORREIOS - SEDEX",
+            "service": "Rodoviário",
+            "deadline": 2,
+            "price": 185.75
+        },
+        {
+            "name": "CORREIOS",
+            "service": "Rodoviário",
+            "deadline": 2,
+            "price": 185.75
         }
-        # ...
     ]
 }
 ```
@@ -151,59 +214,54 @@ curl --location 'http://localhost:8080/metrics?last_quotes=6'
     "metrics": [
         {
             "results_per_carrier": {
-                "AZUL CARGO": 4,
-                "BOX DELIVERY": 6,
-                "BRASPRESS": 2,
-                "BTU BRASPRESS": 2,
-                "CORREIOS": 11,
-                "CORREIOS - SEDEX": 9,
-                "FR EXPRESS (TESTE)": 2,
-                "PRESSA FR (TESTE)": 2,
-                "RAPIDÃO FR (TESTE)": 2
+                "AZUL CARGO": 12,
+                "BOX DELIVERY": 12,
+                "BRASPRESS": 6,
+                "BTU BRASPRESS": 6,
+                "CORREIOS": 24,
+                "CORREIOS - SEDEX": 12,
+                "FR EXPRESS (TESTE)": 6,
+                "PRESSA FR (TESTE)": 6
             },
             "total_price_per_carrier": {
-                "AZUL CARGO": 94.64,
+                "AZUL CARGO": 501.84,
                 "BOX DELIVERY": 0,
-                "BRASPRESS": 120.7,
-                "BTU BRASPRESS": 157.26,
-                "CORREIOS": 1688.44,
-                "CORREIOS - SEDEX": 1553.92,
-                "FR EXPRESS (TESTE)": 200.96,
-                "PRESSA FR (TESTE)": 117.9,
-                "RAPIDÃO FR (TESTE)": 353.16
+                "BRASPRESS": 801.48,
+                "BTU BRASPRESS": 560.09,
+                "CORREIOS": 3473.5,
+                "CORREIOS - SEDEX": 1840.65,
+                "FR EXPRESS (TESTE)": 449.7,
+                "PRESSA FR (TESTE)": 353.7
             },
             "avg_price_per_carrier": {
-                "AZUL CARGO": 23.66,
+                "AZUL CARGO": 41.82,
                 "BOX DELIVERY": 0,
-                "BRASPRESS": 60.35,
-                "BTU BRASPRESS": 78.63,
-                "CORREIOS": 153.49,
-                "CORREIOS - SEDEX": 172.65,
-                "FR EXPRESS (TESTE)": 100.48,
-                "PRESSA FR (TESTE)": 58.95,
-                "RAPIDÃO FR (TESTE)": 176.58
+                "BRASPRESS": 133.58,
+                "BTU BRASPRESS": 93.34,
+                "CORREIOS": 144.72,
+                "CORREIOS - SEDEX": 153.38,
+                "FR EXPRESS (TESTE)": 74.95,
+                "PRESSA FR (TESTE)": 58.95
             },
             "cheapest_freight": {
-                "AZUL CARGO": 23.66,
+                "AZUL CARGO": 41.82,
                 "BOX DELIVERY": 0,
-                "BRASPRESS": 60.35,
-                "BTU BRASPRESS": 78.63,
-                "CORREIOS": 67.27,
-                "CORREIOS - SEDEX": 81.05,
-                "FR EXPRESS (TESTE)": 100.48,
-                "PRESSA FR (TESTE)": 58.95,
-                "RAPIDÃO FR (TESTE)": 176.58
+                "BRASPRESS": 133.58,
+                "BTU BRASPRESS": 93.35,
+                "CORREIOS": 103.71,
+                "CORREIOS - SEDEX": 121.03,
+                "FR EXPRESS (TESTE)": 74.95,
+                "PRESSA FR (TESTE)": 58.95
             },
             "priciest_freight": {
-                "AZUL CARGO": 23.66,
+                "AZUL CARGO": 41.82,
                 "BOX DELIVERY": 0,
-                "BRASPRESS": 60.35,
-                "BTU BRASPRESS": 78.63,
-                "CORREIOS": 332.53,
-                "CORREIOS - SEDEX": 332.53,
-                "FR EXPRESS (TESTE)": 100.48,
-                "PRESSA FR (TESTE)": 58.95,
-                "RAPIDÃO FR (TESTE)": 176.58
+                "BRASPRESS": 133.58,
+                "BTU BRASPRESS": 93.35,
+                "CORREIOS": 185.75,
+                "CORREIOS - SEDEX": 185.75,
+                "FR EXPRESS (TESTE)": 74.95,
+                "PRESSA FR (TESTE)": 58.95
             }
         }
     ]
