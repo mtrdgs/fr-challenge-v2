@@ -16,7 +16,7 @@ type address struct {
 }
 
 type volume struct {
-	Category      string  `json:"category"`
+	Category      int     `json:"category"`
 	Amount        int     `json:"amount"`
 	UnitaryWeight int     `json:"unitary_weight"`
 	Price         int     `json:"price"`
@@ -59,9 +59,21 @@ type returns struct {
 
 // Dispatcher -
 type dispatcher struct {
-	RegisteredNumber string   `json:"registered_number"`
-	Zipcode          int      `json:"zipcode"`
-	Volumes          []volume `json:"volumes"`
+	RegisteredNumber string      `json:"registered_number"`
+	Zipcode          int         `json:"zipcode"`
+	Volumes          []volumeApi `json:"volumes"`
+}
+
+type volumeApi struct {
+	Category      string  `json:"category"`
+	Amount        int     `json:"amount"`
+	UnitaryWeight int     `json:"unitary_weight"`
+	Price         int     `json:"price"`
+	UnitaryPrice  int     `json:"unitary_price"`
+	Sku           string  `json:"sku"`
+	Height        float64 `json:"height"`
+	Width         float64 `json:"width"`
+	Length        float64 `json:"length"`
 }
 
 // ResponseAPI -
