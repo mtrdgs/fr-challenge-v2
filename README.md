@@ -1,10 +1,8 @@
 # fr-challenge-v2
-## Description
 This project is a freight quote simulator that uses an API from Frete Rápido to perform quote calculations and return the available carriers for delivery along with their pricing.
 
 The information related to the quotes is saved in a database and used to calculate metrics (such as the highest price), which are then displayed to the user.
-
-### Tree
+## Tree
 ```text
 .
 ├── fr
